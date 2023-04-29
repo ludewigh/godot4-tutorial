@@ -1,12 +1,15 @@
-[gd_scene load_steps=12 format=3 uid="uid://dmqgd5ejgpeyj"]
+[gd_scene load_steps=16 format=3 uid="uid://dmqgd5ejgpeyj"]
 
 [ext_resource type="Texture2D" uid="uid://ch7degd3ai7u7" path="res://World/GrassBackground.png" id="1_8ocy4"]
+[ext_resource type="PackedScene" uid="uid://n62m0cjmkuxv" path="res://Camera.tscn" id="1_x8ffd"]
 [ext_resource type="PackedScene" uid="uid://k0xept0m8ga4" path="res://Player/player.tscn" id="2_458uh"]
 [ext_resource type="Texture2D" uid="uid://dynhk3xi6lhag" path="res://World/DirtTileset.png" id="2_er8nb"]
 [ext_resource type="PackedScene" uid="uid://dobcu0ep8n5d0" path="res://World/bush.tscn" id="2_k3k5v"]
 [ext_resource type="Texture2D" uid="uid://l3roqesoi3fb" path="res://World/CliffTileset.png" id="3_jwbin"]
 [ext_resource type="PackedScene" uid="uid://b32tubc556bjs" path="res://World/grass.tscn" id="6_folxb"]
 [ext_resource type="PackedScene" uid="uid://ygtga3wteu82" path="res://Enemies/bat.tscn" id="7_djnmw"]
+[ext_resource type="PackedScene" uid="uid://c0j22bj8kcihc" path="res://UI/HealthUI.tscn" id="8_s3slo"]
+[ext_resource type="PackedScene" uid="uid://btm3p8qd4jw83" path="res://World/tree.tscn" id="9_8cvr2"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_owf7y"]
 texture = ExtResource("2_er8nb")
@@ -871,15 +874,27 @@ terrain_set_0/terrain_0/name = "Cliffs"
 terrain_set_0/terrain_0/color = Color(0.45098, 0.380392, 0.0980392, 1)
 sources/1 = SubResource("TileSetAtlasSource_bdc3m")
 
+[sub_resource type="AnimationNodeStateMachinePlayback" id="AnimationNodeStateMachinePlayback_i4gvk"]
+
 [node name="World" type="Node2D"]
+
+[node name="Camera2D" parent="." instance=ExtResource("1_x8ffd")]
+position = Vector2(136, 64)
+
+[node name="TopLeft" parent="Camera2D/Limits" index="0"]
+position = Vector2(-32, -32)
+
+[node name="BottomRight" parent="Camera2D/Limits" index="1"]
+position = Vector2(352, 224)
 
 [node name="GrassBackground" type="Sprite2D" parent="."]
 z_as_relative = false
 texture_repeat = 2
-position = Vector2(160, 90)
+position = Vector2(168, 90)
+scale = Vector2(1.05, 1)
 texture = ExtResource("1_8ocy4")
 region_enabled = true
-region_rect = Rect2(0, 0, 320, 180)
+region_rect = Rect2(-304.751, -144.508, 1019.53, 641.623)
 
 [node name="DirtPathTileMap" type="TileMap" parent="."]
 tile_set = SubResource("TileSet_qa3o3")
@@ -897,6 +912,12 @@ y_sort_enabled = true
 
 [node name="Player" parent="ysort" instance=ExtResource("2_458uh")]
 position = Vector2(136, 64)
+
+[node name="AnimationTree" parent="ysort/Player" index="4"]
+parameters/playback = SubResource("AnimationNodeStateMachinePlayback_i4gvk")
+
+[node name="RemoteTransformCamera" type="RemoteTransform2D" parent="ysort/Player"]
+remote_path = NodePath("../../../Camera2D")
 
 [node name="Bushes" type="Node2D" parent="ysort"]
 y_sort_enabled = true
@@ -951,3 +972,22 @@ position = Vector2(232, 136)
 
 [node name="Bat3" parent="ysort/Bats" instance=ExtResource("7_djnmw")]
 position = Vector2(208, 40)
+
+[node name="Trees" type="Node2D" parent="ysort"]
+y_sort_enabled = true
+
+[node name="Tree" parent="ysort/Trees" instance=ExtResource("9_8cvr2")]
+position = Vector2(272, 120)
+
+[node name="Tree2" parent="ysort/Trees" instance=ExtResource("9_8cvr2")]
+position = Vector2(112, 160)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="HealthUI" parent="CanvasLayer" instance=ExtResource("8_s3slo")]
+offset_right = 120.0
+
+[editable path="Camera2D"]
+[editable path="ysort/Player"]
+[editable path="ysort/Player/HitBoxPivot/SwordHitBox"]
+[editable path="ysort/Player/HurtBox"]
